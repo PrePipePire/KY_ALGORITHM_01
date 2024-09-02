@@ -1,0 +1,20 @@
+def Fibo(a):
+  f = [1, 2]
+  for i in range(a-2):
+      tmp = f[i] + f[i+1]
+      f.append(tmp)
+  return f
+
+def recul_Fibo(a):
+  if (a == 1 or a == 2):
+      return 1
+  else :
+      return recul_Fibo(a-1) + recul_Fibo(a-2)
+
+a = Fibo(15)
+c = 0
+
+for i in a:
+  c += i
+print(a)
+print(recul_Fibo(15))
