@@ -1,0 +1,9 @@
+def hanoi(n, f, t, b):
+    if n == 1:
+        print(f'move {f} -> {t}')
+    else:
+        hanoi(n-1,f,b,t)
+        print(f'move {f} -> {t}')
+        hanoi(n-1,b,t,f)
+
+print(hanoi(4,'a','b','c'))
