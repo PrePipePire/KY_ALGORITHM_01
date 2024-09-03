@@ -1,0 +1,84 @@
+import random
+import time
+
+a = [i for i in range(1, 201)]
+random.shuffle(a)
+b = [i for i in range(1, 201)]
+random.shuffle(b)
+c = [i for i in range(1, 201)]
+random.shuffle(c)
+
+def bubble_sort(a):
+    start = time.time()
+    for _ in range(len(a)):
+        for i in range(len(a)-1):
+            if a[i] > a[i+1]:
+                tmp = a[i]
+                a[i] = a[i+1]
+                a[i+1] = tmp
+    end = time.time()
+    print(a)
+    print(f'실행시간 : {end-start:0.5f}')
+            
+def quick_sort(b, low, high): #고쳐야됨
+    if low >= high:
+        return
+    pivot = a[low]
+    left = low+1
+    right = high
+    while left <= right:
+        while left <= right and a[left] <= pivot:
+            left += 1
+        while left <= right and a[right] >= pivot:
+            right -= 1
+        if left <= right:
+            a[left], a[right] = a[right], a[left]
+    a[low], a[right] = a[right], a[low]
+    quick_sort(b, low, right-1)
+    quick_sort(b, right+1, high)
+
+def merge_sort(c, left, right):
+    if left >= right:
+        return
+    mid = (left+right)//2
+    merge_sort(c, left, mid)
+    merge_sort(c, mid+1, right)
+    merge(c, left, mid, right)
+
+def merge(c, left, mid, right):
+    tmp = [0 for _ in range(right-left+1)]
+    i = left
+    j = mid+1
+    k = 0
+    while i <= mid and j <= right:
+        if c[i] <= c[j]:
+            tmp[k] = c[i]
+            i += 1
+        else:
+            tmp[k] = c[j]
+            j += 1
+        k += 1
+    while i <= mid:
+        tmp[k] = c[i]
+        i += 1
+        k += 1
+    while j <= right:
+        tmp[k] = c[j]
+        j += 1
+        k += 1
+    for i in range(left, right+1):
+        c[i] = tmp[i-left]
+
+bubble_sort(a)
+
+start = time.time()
+quick_sort(b, 0, len(a)-1)
+end = time.time()
+print(b)
+print(f'실행시간 : {end-start:0.5f}')
+
+start = time.time()
+merge_sort(c, 0, len(a)-1)
+end = time.time()
+print(c)
+print(f'실행시간 : {end-start:0.5f}')
