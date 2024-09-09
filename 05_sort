@@ -1,11 +1,11 @@
 import random
 import time
 
-a = [i for i in range(1, 201)]
+a = [i for i in range(1, 10001)]
 random.shuffle(a)
-b = [i for i in range(1, 201)]
+b = [i for i in range(1, 10001)]
 random.shuffle(b)
-c = [i for i in range(1, 201)]
+c = [i for i in range(1, 10001)]
 random.shuffle(c)
 
 def bubble_sort(a):
@@ -17,9 +17,8 @@ def bubble_sort(a):
                 a[i] = a[i+1]
                 a[i+1] = tmp
     end = time.time()
-    print(a)
-    print(f'실행시간 : {end-start:0.5f}')
-            
+    print(f'bubble sort 실행시간 : {end-start:0.5f}')
+
 def quick_sort(b, low, high):
     if low >= high:
         return
@@ -75,11 +74,13 @@ bubble_sort(a)
 start = time.time()
 quick_sort(b, 0, len(a)-1)
 end = time.time()
-print(b)
-print(f'실행시간 : {end-start:0.5f}')
+print(f'quick sort 실행시간 : {end-start:0.5f}')
 
 start = time.time()
 merge_sort(c, 0, len(a)-1)
 end = time.time()
-print(c)
-print(f'실행시간 : {end-start:0.5f}')
+print(f'merge sort 실행시간 : {end-start:0.5f}')
+
+print(f'bubble sort 결과 : {a}')
+print(f'quick sort 결과 : {b}')
+print(f'merge sort 결과 : {c}')
