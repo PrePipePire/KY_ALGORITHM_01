@@ -84,3 +84,48 @@ print(f'merge sort 실행시간 : {end-start:0.5f}')
 print(f'bubble sort 결과 : {a}')
 print(f'quick sort 결과 : {b}')
 print(f'merge sort 결과 : {c}')
+
+graph = [0 for _ in range(10000)]
+for i in range(10000):
+    x = random.randrange(1, 10001)
+    y = random.randrange(1, 10001)
+    graph[i] = [x, y]
+    
+graph.sort()
+    
+def closestpair(graph):
+    
+    if len(graph)%2 == 1:
+        ck = len(graph)//2
+        sl = graph[ck:] 
+        sr = graph[:ck]
+        sc = graph[ck-10:ck+10]
+    else:
+        ck = len(graph)//2
+        sl = graph[ck:]
+        sr = graph[:ck]
+        sc = graph[ck-10:ck+10]
+    
+    cpl = []
+    cpr = []
+    cpc = []
+    
+    for x in range(len(sl)-1):
+        for y in range(x+1, len(sl)):
+            cpl.append(math.dist(sl[x], sl[y]))
+    
+    for x in range(len(sr)-1):
+        for y in range(x+1, len(sl)):
+            cpr.append(math.dist(sl[x], sl[y]))
+    
+    for x in range(len(sc)-1):
+        for y in range(x+1, len(sc)):
+            cpc.append(math.dist(sc[x], sc[y]))
+            
+    cl = min(cpl)
+    cr = min(cpr)
+    cc = min(cpc)
+    
+    return min(cl, cc, cr)
+
+print(closestpair(graph))
