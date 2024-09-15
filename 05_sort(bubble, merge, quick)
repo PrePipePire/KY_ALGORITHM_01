@@ -1,24 +1,17 @@
-import random
 import time
+import random
+import matplotlib.pyplot as plt
 
-a = [i for i in range(1, 10001)]
-random.shuffle(a)
-b = [i for i in range(1, 10001)]
-random.shuffle(b)
-c = [i for i in range(1, 10001)]
-random.shuffle(c)
-
+# Bubble Sort Algorithm
 def bubble_sort(a):
-    start = time.time()
     for _ in range(len(a)):
-        for i in range(len(a)-1):
-            if a[i] > a[i+1]:
+        for i in range(len(a) - 1):
+            if a[i] > a[i + 1]:
                 tmp = a[i]
-                a[i] = a[i+1]
-                a[i+1] = tmp
-    end = time.time()
-    print(f'bubble sort 실행시간 : {end-start:0.5f}')
+                a[i] = a[i + 1]
+                a[i + 1] = tmp
 
+# Quick Sort Algorithm
 def quick_sort(b, low, high):
     if low >= high:
         return
@@ -37,18 +30,19 @@ def quick_sort(b, low, high):
     quick_sort(b, low, right - 1)
     quick_sort(b, right + 1, high)
 
+# Merge Sort Algorithm
 def merge_sort(c, left, right):
     if left >= right:
         return
-    mid = (left+right)//2
+    mid = (left + right) // 2
     merge_sort(c, left, mid)
-    merge_sort(c, mid+1, right)
+    merge_sort(c, mid + 1, right)
     merge(c, left, mid, right)
 
 def merge(c, left, mid, right):
-    tmp = [0 for _ in range(right-left+1)]
+    tmp = [0 for _ in range(right - left + 1)]
     i = left
-    j = mid+1
+    j = mid + 1
     k = 0
     while i <= mid and j <= right:
         if c[i] <= c[j]:
@@ -66,66 +60,65 @@ def merge(c, left, mid, right):
         tmp[k] = c[j]
         j += 1
         k += 1
-    for i in range(left, right+1):
-        c[i] = tmp[i-left]
+    for i in range(left, right + 1):
+        c[i] = tmp[i - left]
 
-bubble_sort(a)
+# 실행 시간을 측정하는 함수
+def measure_time(sort_func, data):
+    start_time = time.time()
+    sort_func(data)
+    return time.time() - start_time
 
-start = time.time()
-quick_sort(b, 0, len(a)-1)
-end = time.time()
-print(f'quick sort 실행시간 : {end-start:0.5f}')
+def measure_time_quick_sort(data):
+    start_time = time.time()
+    quick_sort(data, 0, len(data) - 1)
+    return time.time() - start_time
 
-start = time.time()
-merge_sort(c, 0, len(a)-1)
-end = time.time()
-print(f'merge sort 실행시간 : {end-start:0.5f}')
+def measure_time_merge_sort(data):
+    start_time = time.time()
+    merge_sort(data, 0, len(data) - 1)
+    return time.time() - start_time
 
-print(f'bubble sort 결과 : {a}')
-print(f'quick sort 결과 : {b}')
-print(f'merge sort 결과 : {c}')
+# 실행 시간을 비교하는 함수
+def compare_sorting_algorithms():
+    sizes = [500, 3000, 5000, 10000, 20000]  # 배열 크기
+    bubble_times = []
+    quick_times = []
+    merge_times = []
 
-graph = [0 for _ in range(10000)]
-for i in range(10000):
-    x = random.randrange(1, 10001)
-    y = random.randrange(1, 10001)
-    graph[i] = [x, y]
-    
-graph.sort()
-    
-def closestpair(graph):
-    
-    if len(graph)%2 == 1:
-        ck = len(graph)//2
-        sl = graph[ck:] 
-        sr = graph[:ck]
-        sc = graph[ck-10:ck+10]
-    else:
-        ck = len(graph)//2
-        sl = graph[ck:]
-        sr = graph[:ck]
-        sc = graph[ck-10:ck+10]
-    
-    cpl = []
-    cpr = []
-    cpc = []
-    
-    for x in range(len(sl)-1):
-        for y in range(x+1, len(sl)):
-            cpl.append(math.dist(sl[x], sl[y]))
-    
-    for x in range(len(sr)-1):
-        for y in range(x+1, len(sl)):
-            cpr.append(math.dist(sl[x], sl[y]))
-    
-    for x in range(len(sc)-1):
-        for y in range(x+1, len(sc)):
-            cpc.append(math.dist(sc[x], sc[y]))
-            
-    cl = min(cpl)
-    cr = min(cpr)
-    cc = min(cpc)
-    
-    return min(cl, cc, cr)
+    for size in sizes:
+        data = [random.randint(1, 10000) for _ in range(size)]  # 랜덤 배열 생성
 
-print(closestpair(graph))
+        # Bubble Sort 실행 시간
+        bubble_data = data.copy()
+        bubble_time = measure_time(bubble_sort, bubble_data)
+        bubble_times.append(bubble_time)
+        print(f'Bubble Sort ({size}개): {bubble_time:} 초')
+
+        # Quick Sort 실행 시간
+        quick_data = data.copy()
+        quick_time = measure_time_quick_sort(quick_data)
+        quick_times.append(quick_time)
+        print(f'Quick Sort ({size}개): {quick_time:} 초')
+
+        # Merge Sort 실행 시간
+        merge_data = data.copy()
+        merge_time = measure_time_merge_sort(merge_data)
+        merge_times.append(merge_time)
+        print(f'Merge Sort ({size}개): {merge_time:} 초')
+
+    # 그래프 그리기
+    plt.plot(sizes, bubble_times, label='Bubble Sort', marker='o')
+    plt.plot(sizes, quick_times, label='Quick Sort', marker='o')
+    plt.plot(sizes, merge_times, label='Merge Sort', marker='o')
+    
+    plt.title('Sorting Algorithm Time Compare')
+    plt.xlabel('Array Size')
+    plt.ylabel('Time (seconds)')
+    plt.legend()
+    plt.grid(True)
+    plt.show()
+
+# 메인 함수
+if __name__ == "__main__":
+    compare_sorting_algorithms()
