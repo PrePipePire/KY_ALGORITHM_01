@@ -1,0 +1,98 @@
+import math
+import matplotlib.pyplot as plt
+import time
+import random
+
+# 두 점 사이의 거리 계산 함수
+def distance(p1, p2):
+    return math.sqrt((p1[0] - p2[0])**2 + (p1[1] - p2[1])**2)
+
+# 최근접 점의 쌍을 찾는 브루트 포스 방식 (점이 3개 이하일 때)
+def brute_force(S):
+    min_dist = float('inf')
+    p1, p2 = None, None
+    for i in range(len(S)):
+        for j in range(i + 1, len(S)):
+            d = distance(S[i], S[j])
+            if d < min_dist:
+                min_dist = d
+                p1, p2 = S[i], S[j]
+    return p1, p2, min_dist
+
+# 중간 영역에서 최근접 점의 쌍을 찾는 함수
+def closest_in_strip(strip, d):
+    min_dist = d
+    p1, p2 = None, None
+    strip.sort(key=lambda point: point[1])  # y-좌표로 정렬
+    for i in range(len(strip)):
+        for j in range(i + 1, len(strip)):
+            if strip[j][1] - strip[i][1] >= min_dist:
+                break
+            dist = distance(strip[i], strip[j])
+            if dist < min_dist:
+                min_dist = dist
+                p1, p2 = strip[i], strip[j]
+    return p1, p2, min_dist
+
+# 분할정복을 이용한 최근접 점의 쌍을 찾는 메인 함수
+def closest_pair(S):
+    if len(S) <= 3:
+        return brute_force(S)
+
+    mid = len(S) // 2
+    SL = S[:mid]
+    SR = S[mid:]
+
+    # 좌우측에서의 최근접 점의 쌍
+    p1L, p2L, distL = closest_pair(SL)
+    p1R, p2R, distR = closest_pair(SR)
+
+    # 최소 거리 선택
+    d = min(distL, distR)
+    if d == distL:
+        closest_pair_LR = (p1L, p2L)
+    else:
+        closest_pair_LR = (p1R, p2R)
+
+    # 중간 영역에서 최근접 점 찾기
+    mid_x = S[mid][0]
+    strip = [point for point in S if abs(point[0] - mid_x) < d]
+    p1S, p2S, distS = closest_in_strip(strip, d)
+
+    # 최종 최근접 쌍 선택
+    if distS < d:
+        return p1S, p2S, distS
+    return closest_pair_LR[0], closest_pair_LR[1], d
+
+# 시각화 및 실행시간 측정
+def visualize(S, p1, p2, exec_time):
+    # 모든 점 그리기
+    x_vals = [p[0] for p in S]
+    y_vals = [p[1] for p in S]
+    plt.scatter(x_vals, y_vals, color='blue')
+
+    # 최근접 쌍 빨간색으로 표시
+    plt.scatter([p1[0], p2[0]], [p1[1], p2[1]], color='red')
+    plt.plot([p1[0], p2[0]], [p1[1], p2[1]], 'r-')
+
+    # 실행시간 출력
+    plt.title(f"Closest Pair Distance: {distance(p1, p2):.4f}, Time: {exec_time:.4f} seconds")
+    plt.show()
+
+# 랜덤 점 생성 함수
+def generate_random_points(n, coord_range=(-100, 100)):
+    return [(random.randint(coord_range[0], coord_range[1]), random.randint(coord_range[0], coord_range[1])) for _ in range(n)]
+
+if __name__ == "__main__":
+    # 사용자로부터 점의 개수를 입력받음
+    n = int(input("생성할 점의 개수를 입력하세요: "))
+    
+    # 랜덤으로 n개의 점을 생성
+    S = generate_random_points(n)
+    S.sort(key=lambda point: point[0])  # x-좌표 기준 정렬
+
+    start_time = time.time()
+    p1, p2, min_dist = closest_pair(S)
+    exec_time = time.time() - start_time
+
+    visualize(S, p1, p2, exec_time)
