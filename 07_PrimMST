@@ -1,0 +1,85 @@
+class Graph:
+    INF = 999
+    
+    def __init__(self):
+        self.V = 0 
+        self.vertex = []  
+        self.adj = []  
+        self.MSTWeight = 0
+
+    def prim(self, start):
+        selected = [False] * self.V
+        dist = [self.INF] * self.V
+
+        print(f"Dist[] : {' '.join(f'{d:7}' for d in dist)}")
+        print(f"selected[] : {' '.join(f'{str(s):7}' for s in selected)}")
+
+        # 시작 정점에 대한 초기화
+        dist[start] = 0
+
+        for _ in range(self.V):
+            u = self.get_min_vertex(selected, dist)
+            selected[u] = True
+            self.MSTWeight += dist[u]
+            
+            # dist[]와 selected[] 배열 상태 출력
+            print(f"{self.vertex[u]} ({self.MSTWeight}) ->")
+            print(f"Dist[] : {' '.join(f'{d:7}' for d in dist)}")
+            print(f"selected[] : {' '.join(f'{str(s):7}' for s in selected)}")
+            
+
+            # 인접한 정점들에 대한 거리 업데이트
+            for v in range(self.V):
+                if self.adj[u][v] != self.INF and not selected[v] and self.adj[u][v] < dist[v]:
+                    dist[v] = self.adj[u][v]
+
+    def get_min_vertex(self, selected, dist):
+        minV = -1
+        minDist = self.INF
+
+        # 선택되지 않은 정점 중에서 최소 거리를 가진 정점 찾기
+        for v in range(self.V):
+            if not selected[v] and dist[v] < minDist:
+                minV = v
+                minDist = dist[v]
+
+        return minV
+
+    def print_graph(self):
+        print("정점 수 =", self.V)
+        for i in range(self.V):
+            print(self.vertex[i], end="")
+            for j in range(self.V):
+                print(f"{self.adj[i][j]:8}", end="")
+            print()
+
+    def read_graph(self, filename):
+        with open(filename, 'r') as file:
+            lines = file.readlines()
+
+        self.V = int(lines[0].strip())
+
+        self.vertex = [None] * self.V
+        self.adj = [[self.INF] * self.V for _ in range(self.V)]
+
+        for i, line in enumerate(lines[1:], start=1):
+            parts = line.strip().split('\t')
+
+            self.insert_vertex(i - 1, parts[0])
+
+            for j in range(1, len(parts)):
+                self.insert_edge(i - 1, j - 1, int(parts[j]))
+
+    def insert_edge(self, i, j, w):
+        self.adj[i][j] = w
+
+    def insert_vertex(self, index, name):
+        self.vertex[index] = name
+
+
+# Example usage:
+if __name__ == "__main__":
+    graph = Graph()
+    graph.read_graph('graph.txt')  # 그래프 입력
+    graph.print_graph()
+    graph.prim(0)  # 정점 0에서 시작
