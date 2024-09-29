@@ -80,6 +80,6 @@ class Graph:
 # Example usage:
 if __name__ == "__main__":
     graph = Graph()
-    graph.read_graph('graph.txt')  # 그래프 입력
+    graph.read_graph('07_1_graph.txt')  # 그래프 입력
     graph.print_graph()
     graph.prim(0)  # 정점 0에서 시작
