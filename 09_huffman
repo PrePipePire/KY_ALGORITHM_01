@@ -1,0 +1,93 @@
+import heapq
+from collections import defaultdict, deque
+
+class Node:
+    def __init__(self, symbol=None, frequency=0):
+        self.symbol = symbol
+        self.frequency = frequency
+        self.left = None
+        self.right = None
+
+    # 노드 비교 (우선순위 큐에 넣기 위해 필요)
+    def __lt__(self, other):
+        return self.frequency < other.frequency
+
+    # 허프만 트리 탐색 함수
+    def traverse(self, symbol, path):
+        if self.left is None and self.right is None:  # Leaf 노드
+            if self.symbol == symbol:
+                return path
+            else:
+                return None
+
+        left_path = None
+        if self.left:
+            left_path = self.left.traverse(symbol, path + [False])
+        
+        right_path = None
+        if self.right:
+            right_path = self.right.traverse(symbol, path + [True])
+
+        return left_path if left_path is not None else right_path
+
+class HuffmanTree:
+    def __init__(self):
+        self.root = None
+        self.frequencies = defaultdict(int)
+
+    # 허프만 트리 구축
+    def build(self, source):
+        for char in source:
+            self.frequencies[char] += 1
+        
+        # 확인
+        for char, freq in self.frequencies.items():
+            print(f"{char}: {freq}")
+        
+        # 노드 리스트 생성
+        nodes = [Node(symbol=char, frequency=freq) for char, freq in self.frequencies.items()]
+        heapq.heapify(nodes)  # 최소 힙으로 정렬
+
+        while len(nodes) > 1:
+            left = heapq.heappop(nodes)
+            right = heapq.heappop(nodes)
+            
+            parent = Node(symbol='*', frequency=left.frequency + right.frequency)
+            parent.left = left
+            parent.right = right
+
+            heapq.heappush(nodes, parent)
+        
+        self.root = nodes[0]
+
+    # 인코딩 함수
+    def encode(self, input_text):
+        encoded_output = []
+        for char in input_text:
+            path = self.root.traverse(char, [])
+            if path is not None:
+                encoded_output.extend(path)
+        
+        return encoded_output
+
+    # 디코딩 함수 추가 가능
+
+if __name__ == "__main__":
+    input_text = ("Yesterday all my troubles seemed so far away. Now it looks as though they're here to stay. "
+                  "Oh, I believe in yesterday. Suddenly I'm not half the man I used to be. "
+                  "There's a shadow hanging over me. Oh, yesterday came suddenly. "
+                  "Why she had to go, I don't know, she wouldn't say. "
+                  "I said something wrong, now I long for yesterday. "
+                  "Yesterday love was such an easy game to play. "
+                  "Now I need a place to hide away. Oh, I believe in yesterday. "
+                  "Why she had to go, I don't know, she wouldn't say. "
+                  "I said something wrong, now I long for yesterday. "
+                  "Yesterday love was such an easy game to play. "
+                  "Now I need a place to hide away. Oh, I believe in yesterday. Mm mm mm mm mm mm mm")
+
+    huffman_tree = HuffmanTree()
+    huffman_tree.build(input_text)
+
+    encoded_result = huffman_tree.encode(input_text)
+    
+    print("Encoded:", ''.join(['1' if bit else '0' for bit in encoded_result]))
