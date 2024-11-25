@@ -7,11 +7,9 @@ def fibonacci_dp(n, memo=None):
     if n <= 1:
         return n
     
-    # 값 계산 및 저장
     memo[n] = fibonacci_dp(n - 1, memo) + fibonacci_dp(n - 2, memo)
     return memo[n]
 
-# 테스트
 if __name__ == "__main__":
     n = 10
     print("Fibonacci Memoization:", fibonacci_dp(n))
